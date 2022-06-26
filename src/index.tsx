@@ -6,7 +6,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';
 
-const LecomScan = NativeModules.LecomScan
+export const LecomScan = NativeModules.LecomScan
   ? NativeModules.LecomScan
   : new Proxy(
       {},
