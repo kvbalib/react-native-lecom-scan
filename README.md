@@ -11,11 +11,19 @@ npm install react-native-lecom-scan
 ## Usage
 
 ```js
-import { multiply } from "react-native-lecom-scan";
+import { init, lecomScanEmitter } from "react-native-lecom-scan";
 
-// ...
+useEffect(() => {
+  if (process.env.REACT_APP_LECOM === '1') {
+    LecomScan.init()
+  }
 
-const result = await multiply(3, 7);
+  const subscription = lecomScanEmitter.addListener('EventLecomScanSuccess', (code) => onCameraScannerSuccessRN(code))
+
+  return () => {
+    subscription.remove()
+  }
+}, [])
 ```
 
 ## Contributing

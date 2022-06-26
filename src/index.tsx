@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform, NativeEventEmitter } from 'react-native';
 
 const LINKING_ERROR =
   `The package 'react-native-lecom-scan' doesn't seem to be linked. Make sure: \n\n` +
@@ -17,6 +17,13 @@ const LecomScan = NativeModules.LecomScan
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return LecomScan.multiply(a, b);
+export const lecomScanEmitter = new NativeEventEmitter(LecomScan);
+
+export function init() {
+  return LecomScan.init();
 }
+
+export function toggleScan() {
+  return LecomScan.toggleScan();
+}
+
