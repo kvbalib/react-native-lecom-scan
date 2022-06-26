@@ -26,4 +26,3 @@ export function init() {
 export function toggleScan() {
   return LecomScan.toggleScan();
 }
-
