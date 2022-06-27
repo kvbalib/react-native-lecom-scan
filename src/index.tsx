@@ -65,7 +65,7 @@ export function toggleScan() {
 export const useLecomScan = ({
   callback,
   isActive = true,
-}: LecomScanOptions) => {
+}: LecomScanOptions = {}) => {
   const [code, setCode] = useState('');
   const isAndroid = Platform.OS === 'android';
 
