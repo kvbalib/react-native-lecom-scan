@@ -1,8 +1,6 @@
 package com.reactnativelecomscan;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-
 import android.app.Activity;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -10,8 +8,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
-
-import android.content.DialogInterface;
 import android.device.ScanDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -49,20 +45,6 @@ public class LecomScanModule extends ReactContextBaseJavaModule {
   @NonNull
   public String getName() {
     return NAME;
-  }
-
-  @ReactMethod
-  public void alert() {
-    AlertDialog alertDialog = new AlertDialog.Builder(this.mContext).create();
-    alertDialog.setTitle("Alert");
-    alertDialog.setMessage("I'm running");
-    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-      new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {
-          dialog.dismiss();
-        }
-      });
-    alertDialog.show();
   }
 
   @ReactMethod

@@ -6,24 +6,22 @@ React Native implementation of Lecom scanner SDK.
 
 ```sh
 npm install react-native-lecom-scan
+
+or
+
+yarn add react-native-lecom-scan
+
+or
+
+expo install react-native-lecom-scan
 ```
 
 ## Usage
 
-```js
-import { init, lecomScanEmitter } from "react-native-lecom-scan";
+```ts
+import { useLecomScan } from "react-native-lecom-scan";
 
-useEffect(() => {
-  if (process.env.REACT_APP_LECOM === '1') {
-    LecomScan.init()
-  }
-
-  const subscription = lecomScanEmitter.addListener('EventLecomScanSuccess', (code) => onCameraScannerSuccessRN(code))
-
-  return () => {
-    subscription.remove()
-  }
-}, [])
+const { code } = useLecomScan()
 ```
 
 ## Contributing
