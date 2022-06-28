@@ -1,12 +1,16 @@
 import { NativeModules, Platform, NativeEventEmitter } from 'react-native';
 import { useEffect, useState } from 'react';
 
+type Callback = (code: string) => void;
+
+type AsyncCallback = (code: string) => Promise<void>;
+
 interface LecomScanOptions {
   /**
    * Callback to invoke on a successful scan.
    * @param code
    */
-  callback?: (code: string) => void;
+  callback?: Callback | AsyncCallback;
   /**
    * Should the scanner be initialized.
    */
@@ -81,8 +85,8 @@ export const useLecomScan = ({
   const [code, setCode] = useState('');
   const isDevice = Boolean(checkDevice && checkModel(Platform.constants));
 
-  const onScanSuccess = (c: string) => {
-    if (callback) callback(c);
+  const onScanSuccess = async (c: string) => {
+    if (callback) await callback(c);
 
     setCode(c);
   };
