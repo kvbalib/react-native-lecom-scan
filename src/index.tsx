@@ -11,6 +11,10 @@ interface LecomScanOptions {
    * Should the scanner be initialized.
    */
   isActive?: boolean;
+  /**
+   * Should the device be checked to be a Lecom Scanner PDA before initializing.
+   */
+  checkDevice?: boolean;
 }
 
 enum LecomEvents {
@@ -22,6 +26,12 @@ const LINKING_ERROR =
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';
+
+const checkModel = (constants: any) =>
+  Boolean(
+    (constants.Brand && constants.Brand) === 'alps' &&
+      (constants.Model && constants.Model) === 'PDA'
+  );
 
 const LecomScan = NativeModules.LecomScan
   ? NativeModules.LecomScan
@@ -59,15 +69,17 @@ export function toggleScan() {
  *
  * @param callback
  * @param isActive
+ * @param checkDevice
  *
  * @return code
  */
 export const useLecomScan = ({
   callback,
   isActive = true,
+  checkDevice = true,
 }: LecomScanOptions = {}) => {
   const [code, setCode] = useState('');
-  const isAndroid = Platform.OS === 'android';
+  const isDevice = Boolean(checkDevice && checkModel(Platform.constants));
 
   const onScanSuccess = (c: string) => {
     if (callback) callback(c);
@@ -76,7 +88,7 @@ export const useLecomScan = ({
   };
 
   useEffect(() => {
-    if (isActive && isAndroid) init();
+    if (isActive && isDevice) init();
 
     const subscription = LecomScanEmitter.addListener(
       LecomEvents.ScanSuccess,
@@ -84,9 +96,10 @@ export const useLecomScan = ({
     );
 
     return () => subscription.remove();
-  }, [isActive, isAndroid]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isActive, isDevice]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     code,
+    isDevice,
   };
 };
