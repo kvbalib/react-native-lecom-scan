@@ -1,14 +1,17 @@
-const init = () => {};
+import type { LecomHook, LecomScanOptions, LecomToggleScan } from './Modules';
 
-const toggleScan = () => {};
+/**
+ * Function used to programmatically toggle scan mode.
+ */
+export const toggleScan: LecomToggleScan = () => {};
 
-export const useLecomScan = ({}: LecomScanOptions = {}) => ({
+/**
+ * (Android only) Hook used for the scanner integration.
+ * Initializes the scanner and returns scanned code.
+ *
+ * @param options
+ */
+export const useLecomScan: LecomHook = ({}: LecomScanOptions = {}) => ({
   code: '',
   isDevice: false,
 });
-
-module.exports = {
-  useLecomScan,
-  toggleScan,
-  init,
-};

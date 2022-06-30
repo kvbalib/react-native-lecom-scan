@@ -1,5 +1,6 @@
 import { NativeModules, Platform, NativeEventEmitter } from 'react-native';
 import { useEffect, useState } from 'react';
+import type { LecomHook, LecomScanOptions, LecomToggleScan } from './Modules';
 const { OS, constants } = Platform;
 
 enum LecomEvents {
@@ -19,6 +20,9 @@ const LecomScan = NativeModules.LecomScan
       }
     );
 
+/**
+ * Boolean value matches model and brand of Lecom T80 scacnner.
+ */
 const isLecom =
   OS === 'android' && constants.Brand === 'alps' && constants.Model === 'PDA';
 
@@ -27,11 +31,26 @@ const isLecom =
  */
 const LecomScanEmitter = new NativeEventEmitter(LecomScan);
 
+/**
+ * Function used to initialize the scanner.
+ */
 const init = () => LecomScan.init();
 
-const toggleScan = () => LecomScan.toggleScan();
+/**
+ * Function used to programmatically toggle scan mode.
+ */
+export const toggleScan: LecomToggleScan = () => LecomScan.toggleScan();
 
-const useLecomScan = ({ callback, isActive = true }: LecomScanOptions = {}) => {
+/**
+ * (Android only) Hook used for the scanner integration.
+ * Initializes the scanner and returns scanned code.
+ *
+ * @param options
+ */
+export const useLecomScan: LecomHook = ({
+  callback,
+  isActive = true,
+}: LecomScanOptions = {}) => {
   const [code, setCode] = useState('');
   const isDevice = isLecom;
 
@@ -56,10 +75,4 @@ const useLecomScan = ({ callback, isActive = true }: LecomScanOptions = {}) => {
     code,
     isDevice,
   };
-};
-
-module.exports = {
-  useLecomScan,
-  toggleScan,
-  init,
 };

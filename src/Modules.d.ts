@@ -2,7 +2,7 @@ type Callback = (code: string) => void;
 
 type AsyncCallback = (code: string) => Promise<void>;
 
-interface LecomScanOptions {
+export interface LecomScanOptions {
   /**
    * Callback to invoke on a successful scan.
    * @param code
@@ -14,23 +14,9 @@ interface LecomScanOptions {
   isActive?: boolean;
 }
 
-/**
- * Hook used for the scanner integration.
- * Initializes the scanner and returns scanned code.
- *
- * @param options
- */
-declare function useLecomScan(options?: LecomScanOptions): {
+export declare type LecomHook = (options?: LecomScanOptions) => {
   code: string;
   isDevice: boolean;
 };
 
-/**
- * Function used to programmatically toggle scan mode.
- */
-declare function toggleScan(): void;
-
-/**
- * Function used to initialize the scanner.
- */
-declare function init(): void;
+export declare type LecomToggleScan = () => void;
