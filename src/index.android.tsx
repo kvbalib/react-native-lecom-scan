@@ -24,7 +24,9 @@ const LecomScan = NativeModules.LecomScan
  * Boolean value matches model and brand of Lecom T80 scacnner.
  */
 const isLecom =
-  OS === 'android' && constants.Brand === 'alps' && constants.Model === 'PDA';
+  OS === 'android' &&
+  (constants.Brand === 'alps' || constants.Brand === 'N60') &&
+  constants.Model === 'PDA';
 
 /**
  * Emitter to listen to the 'EventLecomScanSuccess' event.
