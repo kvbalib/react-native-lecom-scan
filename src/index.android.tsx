@@ -55,6 +55,11 @@ const LecomScanEmitter = new NativeEventEmitter(LecomScan);
 const init = () => LecomScan.init();
 
 /**
+ * Function used to stop the scanner.
+ */
+const stop = () => LecomScan.stop();
+
+/**
  * Function used to programmatically toggle scan mode.
  */
 export const toggleScan: LecomToggleScan = () => LecomScan.toggleScan();
@@ -87,7 +92,10 @@ export const useLecomScan: LecomHook = ({
       (c) => onScanSuccess(c)
     );
 
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+      if (isDevice) stop();
+    };
   }, [isActive, isDevice]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {

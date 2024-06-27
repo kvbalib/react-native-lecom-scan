@@ -16,7 +16,7 @@ import android.content.IntentFilter;
 
 @ReactModule(name = LecomScanModule.NAME)
 public class LecomScanModule extends ReactContextBaseJavaModule {
-  ScanDevice sd = new ScanDevice();
+  ScanDevice sd;
   public static final String NAME = "LecomScan";
   private static final String SCAN_ACTION = "scan.rcv.message";
   private Boolean isScanning = false;
@@ -50,28 +50,43 @@ public class LecomScanModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
+  private void registerReceiver() {
+    final Activity activity = getCurrentActivity();
+    if (activity != null) {
+      IntentFilter filter = new IntentFilter();
+      filter.addAction(SCAN_ACTION);
+      activity.registerReceiver(mScanReceiver, filter);
+    }
+  }
+
+  private void unregisterReceiver() {
+    final Activity activity = getCurrentActivity();
+    if (activity != null) {
+      activity.unregisterReceiver(mScanReceiver);
+    }
+  }
+
   @ReactMethod
   public void init() {
-    final Activity activity = getCurrentActivity();
     sd = new ScanDevice();
     sd.setOutScanMode(0);  // Mode-value: 0 broadcast mode
-    IntentFilter filter = new IntentFilter();
-    filter.addAction(SCAN_ACTION);
-    activity.registerReceiver(mScanReceiver, filter);
+    registerReceiver();
+  }
+
+  @ReactMethod
+  public void stop() {
+    sd.stopScan();
+    unregisterReceiver();
+    isScanning = false;
   }
 
   @ReactMethod
   public void toggleScan() {
-    final Activity activity = getCurrentActivity();
     if (isScanning) {
-      sd.stopScan();
-      activity.unregisterReceiver(mScanReceiver);
-      isScanning = false;
+      stop();
     } else {
       sd.startScan();
-      IntentFilter filter = new IntentFilter();
-      filter.addAction(SCAN_ACTION);
-      activity.registerReceiver(mScanReceiver, filter);
+      registerReceiver();
       isScanning = true;
     }
   }

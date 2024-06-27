@@ -33,8 +33,12 @@
   },
   "keywords": [
     "react-native",
-    "ios",
-    "android"
+    "expo",
+    "android",
+    "lecom",
+    "scanner",
+    "T80",
+    "N60"
   ],
   "repository": "https://github.com/kvbalib/react-native-lecom-scan",
   "author": "kvbalib <jakub.jankowski@goingapp.pl> (https://github.com/kvbalib)",
