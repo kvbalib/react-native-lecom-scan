@@ -16,7 +16,7 @@ import android.content.IntentFilter;
 
 @ReactModule(name = LecomScanModule.NAME)
 public class LecomScanModule extends ReactContextBaseJavaModule {
-  ScanDevice sm;
+  ScanDevice sd = new ScanDevice();
   public static final String NAME = "LecomScan";
   private static final String SCAN_ACTION = "scan.rcv.message";
   private Boolean isScanning = false;
@@ -30,14 +30,17 @@ public class LecomScanModule extends ReactContextBaseJavaModule {
   private final BroadcastReceiver mScanReceiver = new BroadcastReceiver() {
     @Override
     public void onReceive(Context context, Intent intent) {
-      byte[] barocode = intent.getByteArrayExtra("barocode");
-      int barocodelen = intent.getIntExtra("length", 0);
-      byte temp = intent.getByteExtra("barcodeType", (byte) 0);
-      byte[] aimid = intent.getByteArrayExtra("aimid");
-      String barcodeStr = new String(barocode, 0, barocodelen);
-      mContext.getJSModule(RCTNativeAppEventEmitter.class)
-        .emit("EventLecomScanSuccess", barcodeStr);
-      sm.stopScan();
+      String action = intent.getAction();
+      if (SCAN_ACTION.equals(action)) {
+        byte[] barcode = intent.getByteArrayExtra("barocode");
+        int barcodeLen = intent.getIntExtra("length", 0);
+        String temp = intent.getStringExtra("barcodeType");
+        String aimID = intent.getStringExtra("aimid");
+        String barcodeStr = new String(barcode, 0, barcodeLen);
+        mContext.getJSModule(RCTNativeAppEventEmitter.class)
+          .emit("EventLecomScanSuccess", barcodeStr);
+        sd.stopScan();
+      }
     }
   };
 
@@ -50,8 +53,8 @@ public class LecomScanModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void init() {
     final Activity activity = getCurrentActivity();
-    sm = new ScanDevice();
-    sm.setOutScanMode(0);
+    sd = new ScanDevice();
+    sd.setOutScanMode(0);  // Mode-value: 0 broadcast mode
     IntentFilter filter = new IntentFilter();
     filter.addAction(SCAN_ACTION);
     activity.registerReceiver(mScanReceiver, filter);
@@ -61,11 +64,11 @@ public class LecomScanModule extends ReactContextBaseJavaModule {
   public void toggleScan() {
     final Activity activity = getCurrentActivity();
     if (isScanning) {
-      sm.stopScan();
+      sd.stopScan();
       activity.unregisterReceiver(mScanReceiver);
       isScanning = false;
     } else {
-      sm.startScan();
+      sd.startScan();
       IntentFilter filter = new IntentFilter();
       filter.addAction(SCAN_ACTION);
       activity.registerReceiver(mScanReceiver, filter);
