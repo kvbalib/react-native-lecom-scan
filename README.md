@@ -1,6 +1,6 @@
 # react-native-lecom-scan
 
-React Native implementation of Lecom scanner SDK. Tested with T80 and N60 scanners.
+React Native implementation of the Lecom scanner SDK. Tested with Lecom T80 and N60 scanners.
 
 Current native Lecom SDK version: 2.2.1
 
@@ -79,7 +79,3 @@ See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the 
 ## License
 
 MIT
-
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)

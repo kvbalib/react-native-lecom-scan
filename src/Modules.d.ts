@@ -12,6 +12,9 @@ export interface LecomScanOptions {
    * Should the scanner be initialized.
    */
   isActive?: boolean;
+  /**
+   * Custom model name override.
+   */
   model?: string;
 }
 
