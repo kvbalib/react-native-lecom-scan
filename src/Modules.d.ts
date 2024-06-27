@@ -12,6 +12,7 @@ export interface LecomScanOptions {
    * Should the scanner be initialized.
    */
   isActive?: boolean;
+  model?: string;
 }
 
 export declare type LecomHook = (options?: LecomScanOptions) => {
