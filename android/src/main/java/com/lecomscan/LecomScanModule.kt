@@ -9,7 +9,6 @@ import android.device.ScanDevice
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
-import com.facebook.react.bridge.Promise
 import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = LecomScanModule.NAME)
@@ -26,11 +25,16 @@ class LecomScanModule internal constructor(context: ReactApplicationContext) : L
       val action = intent.action
       if (SCAN_ACTION == action) {
         val barcode = intent.getByteArrayExtra("barocode")
-        val barcodeLen = intent.getIntExtra("length", 0)
-        val barcodeStr = String(barcode!!, 0, barcodeLen)
-        val emitter = mContext.getJSModule(RCTNativeAppEventEmitter::class.java)
-        emitter.emit("EventLecomScanSuccess", barcodeStr)
+        val barcodeStr = barcode?.let {
+          val barcodeLen = intent.getIntExtra("length", 0)
+          String(it, 0, barcodeLen)
+        }
+        if (barcodeStr != null) {
+          val emitter = mContext.getJSModule(RCTNativeAppEventEmitter::class.java)
+          emitter.emit("EventLecomScanSuccess", barcodeStr)
+        }
         sd?.stopScan()
+        isScanning = false
       }
     }
   }
@@ -52,7 +56,11 @@ class LecomScanModule internal constructor(context: ReactApplicationContext) : L
   // Unregister BroadcastReceiver for scan results
   private fun unregisterReceiver() {
     val activity: Activity? = currentActivity
-    activity?.unregisterReceiver(mScanReceiver)
+    try {
+      activity?.unregisterReceiver(mScanReceiver)
+    } catch (e: IllegalArgumentException) {
+      // Handle the case where the receiver was not registered
+    }
   }
 
   // Initialize the ScanDevice and register the receiver
@@ -85,12 +93,12 @@ class LecomScanModule internal constructor(context: ReactApplicationContext) : L
 
   // Required for rn built-in EventEmitter Calls
   @ReactMethod
-  fun addListener(eventName: String) {
+  override fun addListener(eventName: String) {
     // No operation needed here, just for consistency with JS EventEmitter
   }
 
   @ReactMethod
-  fun removeListeners(count: Int) {
+  override fun removeListeners(count: Int) {
     // No operation needed here, just for consistency with JS EventEmitter
   }
 
