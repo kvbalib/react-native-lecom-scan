@@ -85,12 +85,12 @@ class LecomScanModule internal constructor(context: ReactApplicationContext) : L
 
   // Required for rn built-in EventEmitter Calls
   @ReactMethod
-  override fun addListener(eventName: String) {
+  fun addListener(eventName: String) {
     // No operation needed here, just for consistency with JS EventEmitter
   }
 
   @ReactMethod
-  override fun removeListeners(count: Int) {
+  fun removeListeners(count: Int) {
     // No operation needed here, just for consistency with JS EventEmitter
   }
 

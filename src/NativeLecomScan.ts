@@ -24,6 +24,7 @@ export interface LecomScanOptions {
 export declare type LecomHook = (options?: LecomScanOptions) => {
   code: string
   isDevice: boolean
+  model?: string
 }
 
 export declare type LecomToggleScan = () => void

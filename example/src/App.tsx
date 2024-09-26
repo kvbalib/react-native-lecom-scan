@@ -5,12 +5,13 @@ import { useLecomScan } from 'react-native-lecom-scan'
 
 export default function App() {
   const [result, setResult] = useState<string | undefined>()
-  useLecomScan({
+  const { model } = useLecomScan({
     callback: (code) => setResult(code),
   })
 
   return (
     <View style={styles.container}>
+      <Text>Model: {model}</Text>
       <Text>Result: {result}</Text>
     </View>
   )
