@@ -7,7 +7,7 @@ import com.facebook.react.bridge.Promise
 abstract class LecomScanSpec internal constructor(context: ReactApplicationContext) :
   ReactContextBaseJavaModule(context) {
 
-  abstract override fun init()
-  abstract override fun stop()
-  abstract override fun toggleScan()
+  abstract fun init()
+  abstract fun stop()
+  abstract fun toggleScan()
 }
