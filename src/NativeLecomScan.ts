@@ -21,13 +21,13 @@ export interface LecomScanOptions {
   model?: string
 }
 
-export declare type LecomHook = (options?: LecomScanOptions) => {
+export type LecomHook = (options?: LecomScanOptions) => {
   code: string
   isDevice: boolean
   model?: string
 }
 
-export declare type LecomToggleScan = () => void
+export type LecomToggleScan = () => void
 
 export interface Spec extends TurboModule {
   init(): void

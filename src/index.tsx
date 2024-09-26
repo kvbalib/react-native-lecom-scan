@@ -87,7 +87,7 @@ export const toggleScan: LecomToggleScan = Platform.select({
  *
  * @param options
  */
-export const useLecomScan: LecomHook = ({
+const useLecomScanAndroid: LecomHook = ({
   callback,
   isActive = true,
   model,
@@ -131,3 +131,16 @@ export const useLecomScan: LecomHook = ({
     model: Platform.OS === 'android' ? Platform.constants.Brand : undefined,
   }
 }
+
+const useLecomScanIOS: LecomHook = () => {
+  return {
+    code: '',
+    isDevice: false,
+    model: Platform.OS === 'android' ? Platform.constants.Brand : undefined,
+  }
+}
+
+export const useLecomScan: LecomHook = Platform.select({
+  android: useLecomScanAndroid,
+  default: useLecomScanIOS,
+})
