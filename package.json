@@ -1,6 +1,6 @@
 {
   "name": "react-native-lecom-scan",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "React Native implementation of the Lecom scanner SDK.",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
