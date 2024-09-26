@@ -83,11 +83,7 @@ const toggleScan: LecomToggleScan = () => LecomScan.toggleScan()
  *
  * @param options
  */
-const useLecomScan: LecomHook = ({
-  callback,
-  isActive = true,
-  model,
-}: LecomScanOptions = {}) => {
+const useLecomScan: LecomHook = ({ callback, isActive = true, model }: LecomScanOptions = {}) => {
   const [code, setCode] = useState('')
   const isDevice = checkLecom(model)
 
