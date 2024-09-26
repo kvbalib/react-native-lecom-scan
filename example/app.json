@@ -1,0 +1,19 @@
+{
+  "name": "LecomScanExample",
+  "displayName": "LecomScanExample",
+  "components": [
+    {
+      "appKey": "LecomScanExample",
+      "displayName": "LecomScanExample"
+    }
+  ],
+  "resources": {
+    "android": [
+      "dist/res",
+      "dist/main.android.jsbundle"
+    ]
+  },
+  "android": {
+    "package": "lecomscan.example"
+  }
+}
