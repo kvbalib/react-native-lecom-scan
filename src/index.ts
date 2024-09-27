@@ -1,21 +1,22 @@
-import { Platform } from 'react-native'
-
 import type { LecomHook, LecomToggleScan } from './NativeLecomScan'
 
 /**
  * Function used to programmatically toggle scan mode.
  */
-export const toggleScan: LecomToggleScan = () => {}
+export const toggleScan: LecomToggleScan = () => {
+  // Do nothing on platforms other than Android.
+}
 
 /**
  * (Android only) Hook used for the scanner integration.
  * Initializes the scanner and returns scanned code.
+ * The hook can be called in an iOS environment, it will stay agnostic and do nothing.
  */
 export const useLecomScan: LecomHook = () => {
-  console.log('using ios useLecomScan')
+  // Do nothing on platforms other than Android.
   return {
     code: '',
     isDevice: false,
-    model: Platform.OS === 'android' ? Platform.constants.Brand : undefined,
+    model: undefined,
   }
 }
