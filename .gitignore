@@ -80,6 +80,3 @@ lib/
 # React Native Codegen
 ios/generated
 android/generated
-
-# Example dist
-example/dist/
