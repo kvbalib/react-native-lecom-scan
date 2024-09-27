@@ -2,6 +2,9 @@ import { Platform } from 'react-native'
 
 import type { LecomHook, LecomToggleScan } from './NativeLecomScan'
 
+/**
+ * Function used to programmatically toggle scan mode.
+ */
 export const toggleScan: LecomToggleScan = () => {}
 
 /**
