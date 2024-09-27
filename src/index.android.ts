@@ -61,7 +61,7 @@ const checkLecom = (model?: string): boolean => {
 /**
  * Emitter to listen to the 'EventLecomScanSuccess' event.
  */
-const LecomScanEmitter = new NativeEventEmitter(LecomScan)
+const LecomScanEmitter = Platform.OS === 'android' ? new NativeEventEmitter(LecomScan) : null
 
 /**
  * Function used to initialize the scanner.
@@ -81,6 +81,7 @@ export const toggleScan: LecomToggleScan = () => LecomScan.toggleScan()
 /**
  * (Android only) Hook used for the scanner integration.
  * Initializes the scanner and returns scanned code.
+ * The hook can be called in an iOS environment, it will stay agnostic and do nothing.
  */
 export const useLecomScan: LecomHook = ({
   callback,
@@ -89,13 +90,10 @@ export const useLecomScan: LecomHook = ({
 }: LecomScanOptions = {}) => {
   const [code, setCode] = useState('')
   const isDevice = checkLecom(model)
-  console.log('using android useLecomScan')
 
   const onScanSuccess = useCallback(
     async (c: string) => {
-      if (callback) {
-        await callback(c)
-      }
+      if (callback) await callback(c)
 
       setCode(c)
     },
@@ -105,21 +103,22 @@ export const useLecomScan: LecomHook = ({
   useEffect(() => {
     let subscription: EmitterSubscription | undefined
 
-    if (Platform.OS === 'android') {
-      if (isActive && isDevice) {
+    if (Platform.OS === 'android' && LecomScanEmitter && isDevice) {
+      if (isActive) {
         init()
+        subscription = LecomScanEmitter.addListener(LecomEvents.ScanSuccess, (c) =>
+          onScanSuccess(c)
+        )
+      } else {
+        stop()
       }
-
-      subscription = LecomScanEmitter.addListener(LecomEvents.ScanSuccess, (c) => onScanSuccess(c))
     }
 
     return () => {
-      if (subscription) {
-        subscription.remove()
-        if (isDevice) stop()
-      }
+      if (subscription) subscription.remove()
+      if (isDevice) stop()
     }
-  }, [isActive, isDevice, callback, onScanSuccess])
+  }, [isActive, isDevice, onScanSuccess])
 
   return {
     code,

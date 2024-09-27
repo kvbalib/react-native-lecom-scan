@@ -5,20 +5,18 @@ export interface Spec extends TurboModule {
   init(): void
   stop(): void
   toggleScan(): void
+  addListener(eventName: string): void
+  removeListeners(count: number): void
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LecomScan')
-
-type Callback = (code: string) => void
-
-type AsyncCallback = (code: string) => Promise<void>
 
 export interface LecomScanOptions {
   /**
    * Callback to invoke on a successful scan.
    * @param code
    */
-  callback?: Callback | AsyncCallback
+  callback?: ((code: string) => Promise<void>) | ((code: string) => void)
   /**
    * Should the scanner be initialized.
    */
@@ -29,17 +27,10 @@ export interface LecomScanOptions {
   model?: string
 }
 
-/**
- * (Android only) Hook used for the scanner integration.
- * Initializes the scanner and returns scanned code.
- */
+export type LecomToggleScan = () => void
+
 export type LecomHook = (options?: LecomScanOptions) => {
   code: string
   isDevice: boolean
   model?: string
 }
-
-/**
- * Function used to programmatically toggle scan mode.
- */
-export type LecomToggleScan = () => void

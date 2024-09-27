@@ -11,5 +11,5 @@ abstract class LecomScanSpec internal constructor(context: ReactApplicationConte
   abstract fun stop()
   abstract fun toggleScan()
   abstract fun addListener(eventName: String)
-  abstract fun removeListeners(count: Int)
+  abstract fun removeListeners(count: Double)
 }
