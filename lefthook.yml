@@ -2,8 +2,7 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      glob: "*.{js,ts,jsx,tsx}"
-      run: lint {staged_files}
+      run: yarn lint --quiet
     types:
       glob: "*.{js,ts, jsx, tsx}"
       run: npx tsc
