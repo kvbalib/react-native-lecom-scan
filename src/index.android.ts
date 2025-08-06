@@ -104,7 +104,7 @@ export const useLecomScan: LecomHook = ({
       if (callback) await callback(c)
       setCode(c)
     },
-    [callback]
+    [callback, lastCodeRef]
   )
 
   useEffect(() => {
