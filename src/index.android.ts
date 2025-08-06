@@ -10,7 +10,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n'
 
-// @ts-expect-error
+// @ts-expect-error - TODO: globalThis has no index signature
 const isTurboModuleEnabled = global.__turboModuleProxy != null
 
 const LecomScanModule = isTurboModuleEnabled
@@ -92,14 +92,12 @@ export const useLecomScan: LecomHook = ({
   model,
 }: LecomScanOptions = {}) => {
   const [code, setCode] = useState('')
-  const lastCodeRef = useRef<string>()
+  const lastCodeRef = useRef<string | undefined>()
   const isDevice = useMemo(() => checkLecom(model), [model])
 
   const onScanSuccess = useCallback(
     async (c: string) => {
-      if (c === lastCodeRef.current) {
-        return
-      }
+      if (c === lastCodeRef.current) return
       lastCodeRef.current = c
       if (callback) await callback(c)
       setCode(c)
@@ -116,9 +114,7 @@ export const useLecomScan: LecomHook = ({
         subscription = LecomScanEmitter.addListener(LecomEvents.ScanSuccess, (c) =>
           onScanSuccess(c)
         )
-      } else {
-        stop()
-      }
+      } else stop()
     }
 
     return () => {
