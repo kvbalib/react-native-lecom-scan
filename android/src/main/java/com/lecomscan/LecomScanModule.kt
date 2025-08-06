@@ -160,7 +160,7 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
     stop()
   }
 
-  @Deprecated("Use invalidate()", ReplaceWith(""))
+  @Deprecated("Use invalidate()", ReplaceWith("invalidate()"))
   @Suppress("DEPRECATION")
   override fun onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy()
