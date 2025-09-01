@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native'
 import type { EmitterSubscription } from 'react-native'
 
@@ -10,7 +10,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n'
 
-// @ts-expect-error
+// @ts-expect-error - TODO: globalThis has no index signature
 const isTurboModuleEnabled = global.__turboModuleProxy != null
 
 const LecomScanModule = isTurboModuleEnabled
@@ -73,6 +73,9 @@ const init = () => LecomScan.init()
  */
 const stop = () => LecomScan.stop()
 
+// Expose init and stop so advanced consumers can manage lifecycle manually.
+export { init as initScanner, stop as stopScanner }
+
 /**
  * Function used to programmatically toggle scan mode.
  */
@@ -89,15 +92,17 @@ export const useLecomScan: LecomHook = ({
   model,
 }: LecomScanOptions = {}) => {
   const [code, setCode] = useState('')
-  const isDevice = checkLecom(model)
+  const lastCodeRef = useRef<string | undefined>()
+  const isDevice = useMemo(() => checkLecom(model), [model])
 
   const onScanSuccess = useCallback(
     async (c: string) => {
+      if (c === lastCodeRef.current) return
+      lastCodeRef.current = c
       if (callback) await callback(c)
-
       setCode(c)
     },
-    [callback]
+    [callback, lastCodeRef]
   )
 
   useEffect(() => {
@@ -109,9 +114,7 @@ export const useLecomScan: LecomHook = ({
         subscription = LecomScanEmitter.addListener(LecomEvents.ScanSuccess, (c) =>
           onScanSuccess(c)
         )
-      } else {
-        stop()
-      }
+      } else stop()
     }
 
     return () => {
