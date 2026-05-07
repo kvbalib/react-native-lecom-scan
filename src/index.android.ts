@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native'
 import type { EmitterSubscription } from 'react-native'
 
@@ -10,8 +10,8 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n'
 
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null
+const isTurboModuleEnabled =
+  (globalThis as { __turboModuleProxy?: unknown }).__turboModuleProxy != null
 
 const LecomScanModule = isTurboModuleEnabled
   ? require('./NativeLecomScan').default
@@ -91,14 +91,12 @@ export const useLecomScan: LecomHook = ({
   const [code, setCode] = useState('')
   const isDevice = checkLecom(model)
 
-  const onScanSuccess = useCallback(
-    async (c: string) => {
-      if (callback) await callback(c)
-
-      setCode(c)
-    },
-    [callback]
-  )
+  // Hold the latest callback in a ref so changing its identity does not tear down
+  // and re-init the native receiver on every render.
+  const callbackRef = useRef(callback)
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
 
   useEffect(() => {
     let subscription: EmitterSubscription | undefined
@@ -106,9 +104,10 @@ export const useLecomScan: LecomHook = ({
     if (Platform.OS === 'android' && LecomScanEmitter && isDevice) {
       if (isActive) {
         init()
-        subscription = LecomScanEmitter.addListener(LecomEvents.ScanSuccess, (c) =>
-          onScanSuccess(c)
-        )
+        subscription = LecomScanEmitter.addListener(LecomEvents.ScanSuccess, async (c: string) => {
+          await callbackRef.current?.(c)
+          setCode(c)
+        })
       } else {
         stop()
       }
@@ -118,7 +117,7 @@ export const useLecomScan: LecomHook = ({
       if (subscription) subscription.remove()
       if (isDevice) stop()
     }
-  }, [isActive, isDevice, onScanSuccess])
+  }, [isActive, isDevice])
 
   return {
     code,
