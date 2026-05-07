@@ -8,16 +8,6 @@ export const toggleScan: LecomToggleScan = () => {
 }
 
 /**
- * (Android only) Initialize the scanner (noop on unsupported platforms).
- */
-export const initScanner = () => {}
-
-/**
- * (Android only) Stop the scanner (noop on unsupported platforms).
- */
-export const stopScanner = () => {}
-
-/**
  * (Android only) Hook used for the scanner integration.
  * Initializes the scanner and returns scanned code.
  * The hook can be called in an iOS environment, it will stay agnostic and do nothing.

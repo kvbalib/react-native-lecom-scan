@@ -30,12 +30,6 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
 
   private val handler = Handler(Looper.getMainLooper())
 
-  // Emit event to JS side on main thread.
-  private fun emitScan(code: String) {
-    val emitter = mContext.getJSModule(RCTNativeAppEventEmitter::class.java)
-    emitter.emit("EventLecomScanSuccess", code)
-  }
-
   // BroadcastReceiver to handle scan results
   private val mScanReceiver: BroadcastReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -47,7 +41,10 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
           String(it, 0, barcodeLen)
         }
         barcodeStr?.let {
-          handler.post { emitScan(barcodeStr) }
+          handler.post {
+            val emitter = mContext.getJSModule(RCTNativeAppEventEmitter::class.java)
+            emitter.emit("EventLecomScanSuccess", barcodeStr)
+          }
         }
         sd?.stopScan()
         isScanning = false
@@ -81,7 +78,14 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
     }
   }
 
-  private fun isScanDeviceAvailable(): Boolean = IS_SCAN_DEVICE_AVAILABLE
+  private fun isScanDeviceAvailable(): Boolean {
+    return try {
+      Class.forName("android.device.ScanDevice")
+      true
+    } catch (e: ClassNotFoundException) {
+      false
+    }
+  }
 
   // Initialize the ScanDevice and register the receiver
   @ReactMethod
@@ -104,11 +108,7 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
   // Stop the ScanDevice and unregister the receiver
   @ReactMethod
   override fun stop() {
-    try {
-      sd?.stopScan()
-    } catch (e: Exception) {
-      Log.w("LecomScanModule", "stopScan threw: $e")
-    }
+    sd?.stopScan()
     sd = null
     unregisterReceiver()
     isScanning = false
@@ -123,9 +123,6 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
       if (sd == null) {
         sd = ScanDevice()
         sd?.setOutScanMode(0)
-      }
-      if (!isReceiverRegistered) {
-        registerReceiver()
       }
       sd?.startScan()
       isScanning = true
@@ -160,8 +157,6 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
     stop()
   }
 
-  @Deprecated("Use invalidate()", ReplaceWith("invalidate()"))
-  @Suppress("DEPRECATION")
   override fun onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy()
     stop()
@@ -170,11 +165,5 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
 
   companion object {
     const val NAME = "LecomScan"
-    private val IS_SCAN_DEVICE_AVAILABLE: Boolean = try {
-      Class.forName("android.device.ScanDevice")
-      true
-    } catch (e: ClassNotFoundException) {
-      false
-    }
   }
 }
