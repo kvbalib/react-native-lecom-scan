@@ -1,6 +1,5 @@
 package com.lecomscan
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -78,14 +77,7 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
     }
   }
 
-  private fun isScanDeviceAvailable(): Boolean {
-    return try {
-      Class.forName("android.device.ScanDevice")
-      true
-    } catch (e: ClassNotFoundException) {
-      false
-    }
-  }
+  private fun isScanDeviceAvailable(): Boolean = IS_SCAN_DEVICE_AVAILABLE
 
   // Initialize the ScanDevice and register the receiver
   @ReactMethod
@@ -108,7 +100,11 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
   // Stop the ScanDevice and unregister the receiver
   @ReactMethod
   override fun stop() {
-    sd?.stopScan()
+    try {
+      sd?.stopScan()
+    } catch (e: Exception) {
+      Log.w("LecomScanModule", "stopScan threw: $e")
+    }
     sd = null
     unregisterReceiver()
     isScanning = false
@@ -120,10 +116,12 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
     if (isScanning) {
       stop()
     } else {
+      if (!isScanDeviceAvailable()) return
       if (sd == null) {
         sd = ScanDevice()
         sd?.setOutScanMode(0)
       }
+      registerReceiver()
       sd?.startScan()
       isScanning = true
     }
@@ -165,5 +163,11 @@ class LecomScanModule internal constructor(private val mContext: ReactApplicatio
 
   companion object {
     const val NAME = "LecomScan"
+    private val IS_SCAN_DEVICE_AVAILABLE: Boolean = try {
+      Class.forName("android.device.ScanDevice")
+      true
+    } catch (e: ClassNotFoundException) {
+      false
+    }
   }
 }
